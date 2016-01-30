@@ -18,7 +18,7 @@
         for(var i = 0; i < notes.length; ++i){
           if(notes[i])
           {
-            moyenne += parseInt(notes[i]);
+            moyenne += parseFloat(notes[i]);
             nb++;
           }
         }
@@ -38,7 +38,7 @@
         newNotes.push('');
       }
       else{
-        var n = parseInt(notes[i]);
+        var n = parseFloat(notes[i]);
         var a = (moyenne - Math.abs(moyenne - n)) * averageValue;
         newNotes.push(n+lineareValue + a)
       }
