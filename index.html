@@ -10,20 +10,232 @@
   <div id="example"></div>
   <script type="text/babel">
   
+  
+  function moy(notes){
+  
+        var moyenne = 0;
+        var nb = 0;
+        for(var i = 0; i < notes.length; ++i){
+          if(notes[i])
+          {
+            moyenne += parseInt(notes[i]);
+            nb++;
+          }
+        }
+        moyenne /= nb;
+        return moyenne
+  }
+  
+  function generateNewNotes(notes, lineareValue, averageValue){
+    var moyenne = moy(notes)
+    console.log(moyenne)
+    lineareValue = parseFloat(lineareValue)
+    averageValue = parseFloat(averageValue)
+    var newNotes = []
+    for(var i = 0; i < notes.length; ++i)
+    {
+      if(notes[i]==''){
+        newNotes.push('');
+      }
+      else{
+        var n = parseInt(notes[i]);
+        var a = (moyenne - Math.abs(moyenne - n)) * averageValue;
+        newNotes.push(n+lineareValue + a)
+      }
+    }
+    return newNotes;
+  
+  }
+  
+  
+    var Moyenne = React.createClass({
+      render: function(){
+        var moyenne = 0;
+        var nb = 0;
+        for(var i = 0; i < this.props.notes.length; ++i){
+          if(this.props.notes[i])
+          {
+            moyenne += parseInt(this.props.notes[i]);
+            nb++;
+          }
+        }
+        moyenne /= nb;
+        return <span>moyenne = {moyenne}</span>
+      }
+    });
     var NoteItem = React.createClass({
+      onChange: function(event){
+        this.props.onChange(this.props.id, event.target.value)
+      },
+      onKeyUp: function(event){
+      //console.log(event.keyCode)
+        if(event.keyCode == 13)
+        {
+          this.props.onEnter(this.props.id)
+        }
+        if(event.keyCode == 38)
+        {
+          this.props.onUp(this.props.id)
+        }
+        if(event.keyCode == 40)
+        {
+          this.props.onDown(this.props.id)
+        }
+        if(event.keyCode == 8)
+        {
+          this.props.onDelete(this.props.id)
+        }
+      },
+      focus:function() {
+        var el = ReactDOM.findDOMNode(this.refs.input);
+        if(document.activeElement !== el) {
+          el.focus()
+        }
+      },
       render: function() {
         return (
           <div>
-            <label>{{'note '+this.props.id}}</label>
-            <input type="text" name="notes" />
+            <label htmlFor="note-{this.props.id}">notes {this.props.id}: </label>
+            <input onKeyUp={this.onKeyUp} ref="input" onChange={this.onChange} id="note-{this.props.id}" type="text" name="notes" value={this.props.value} />
+            <span> {this.props.newValue}</span>
           </div>
         );
+      }
+    });
+    
+    var NoteList = React.createClass({
+      
+      getInitialState: function() {
+        return {notes: [1], focus:1, newNotes:[1], lineareValue:0, averageValue:0};
+      },
+      generateNewNotes: function(notes, v, v2){
+        if(v == undefined)
+        {
+          v = this.state.lineareValue;
+        }
+        if(v2 == undefined)
+        {
+          v2 = this.state.averageValue;
+        }
+        return generateNewNotes(notes, v, v2);
+      },
+      handleAverageValueChanged: function(event) {
+        this.setState({
+          averageValue:event.target.value, 
+          focus:0,
+          newNotes:this.generateNewNotes(this.state.notes, this.state.lineareValue, event.target.value)
+        })
+      },
+      handleLineareValueChanged: function(event) {
+        this.setState({
+          lineareValue:event.target.value, 
+          focus:0,
+          newNotes:this.generateNewNotes(this.state.notes, event.target.value)
+        })
+      },
+      handleNoteChange: function(id, value) {
+        var notes = this.state.notes;
+        notes[id-1] = value;
+        this.setState({
+          notes:notes, 
+          newNotes:this.generateNewNotes(notes),
+          focus:id
+          });
+        console.log(id+' '+value)
+      }, 
+      handleEnter: function(id) {
+        var notes = this.state.notes;
+        if(notes.length > id) {
+          notes.splice(id, 0, '');
+          focus = id + 1;
+        } else {
+          notes.push('');
+          focus = notes.length;
+        }
+        this.setState({
+          notes:notes, 
+          newNotes:this.generateNewNotes(notes), 
+          focus:focus});
+        console.log("Enter: "+id);
+      }, 
+      handleUp: function(id) {
+        if(id > 1) {
+          this.setState({
+            notes:this.state.notes, 
+            newNotes:this.generateNewNotes(this.state.notes), 
+            focus:id - 1});
+        }
+      },
+      handleDown: function(id) {
+        if(id < this.state.notes.length) {
+          this.setState({
+            notes:this.state.notes, 
+            newNotes:this.generateNewNotes(this.state.notes), 
+            focus:id + 1});
+        }
+      
+      },
+      handleDelete: function(id) {
+        if(this.state.notes[id-1] != ''){
+          return;
+        }
+        var notes = this.state.notes;
+        var focus = this.state.focus;
+        notes.splice(id-1, 1);
+        if(notes.length == 0){
+          notes = [''];
+        }
+        focus = focus - 1
+        if (focus < 1) focus = 1;
+        
+        this.setState({
+            notes:notes, 
+            newNotes:this.generateNewNotes(notes),
+            focus: focus
+        });
+      },
+      render: function() {
+         var id = 0
+         var list = this.state.notes.map(function(note) {
+         id++;
+          return (
+            <NoteItem ref={id} 
+            key={id} 
+            onDelete={this.handleDelete.bind(this)} 
+            onUp={this.handleUp.bind(this)}
+            onDown={this.handleDown.bind(this)} 
+            onEnter={this.handleEnter.bind(this)} 
+            onChange={this.handleNoteChange.bind(this)} 
+            id={id} 
+            value={note}
+            newValue={this.state.newNotes[id-1]}/>
+          );
+        }.bind(this));
+        id++;
+        return (
+          <div>
+            <div>Ajout Linéaire : <input onChange={this.handleLineareValueChanged} type="text" defaultValue="0" /></div>
+            <div>Ajout autour de la moyenne : <input onChange={this.handleAverageValueChanged} type="text" defaultValue="0" /></div>
+            <div>{list}</div>
+            <div> ----------- <Moyenne notes={this.state.notes}/> ========> <Moyenne notes={this.state.newNotes}/></div>
+          </div>
+        );
+      },
+      updateFocus: function() {
+        if(this.state.focus)
+          this.refs[this.state.focus].focus()
+      },
+      componentDidUpdate: function(){
+        this.updateFocus();
+      },
+      componentDidMount: function(){
+        //this.updateFocus();
       }
     });
   
   
     ReactDOM.render(
-      <NoteItem id="1" />,
+      <NoteList />,
       document.getElementById('example')
     );
   </script>
