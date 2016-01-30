@@ -9,8 +9,21 @@
 <body>
   <div id="example"></div>
   <script type="text/babel">
+  
+    var NoteItem = React.createClass({
+      render: function() {
+        return (
+          <div>
+            <label>{{'note '+this.props.id}}</label>
+            <input type="text" name="notes" />
+          </div>
+        );
+      }
+    });
+  
+  
     ReactDOM.render(
-      <h1>Hello, world!</h1>,
+      <NoteItem id="1" />,
       document.getElementById('example')
     );
   </script>
