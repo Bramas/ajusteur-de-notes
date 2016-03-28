@@ -106,6 +106,9 @@
     var NoteList = React.createClass({
       
       getInitialState: function() {
+        if(localStorage.getItem('notesState')) {
+          return localStorage.getItem('notesState');
+        }
         return {notes: [1], focus:1, newNotes:[1], lineareValue:0, averageValue:0};
       },
       generateNewNotes: function(notes, v, v2){
@@ -193,6 +196,10 @@
             newNotes:this.generateNewNotes(notes),
             focus: focus
         });
+      },
+      shouldComponentUpdate: function(nextProps, nextState) {
+        localStorage.setItem('notesState', nextState);
+        return true;
       },
       render: function() {
          var id = 0
