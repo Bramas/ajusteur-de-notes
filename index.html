@@ -107,7 +107,7 @@
       
       getInitialState: function() {
         if(localStorage.getItem('notesState')) {
-          return localStorage.getItem('notesState');
+          return JSON.parse(localStorage.getItem('notesState'));
         }
         return {notes: [1], focus:1, newNotes:[1], lineareValue:0, averageValue:0};
       },
@@ -198,7 +198,7 @@
         });
       },
       shouldComponentUpdate: function(nextProps, nextState) {
-        localStorage.setItem('notesState', nextState);
+        localStorage.setItem('notesState', JSON.stringify(nextState));
         return true;
       },
       render: function() {
