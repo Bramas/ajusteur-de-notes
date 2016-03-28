@@ -39,7 +39,7 @@
       }
       else{
         var n = parseFloat(notes[i]);
-        var a = (moyenne - Math.abs(moyenne - n)) * averageValue;
+        var a = Math.max(0, (moyenne - Math.abs(moyenne - n)) * averageValue);
         newNotes.push(n+lineareValue + a)
       }
     }
