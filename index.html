@@ -40,7 +40,7 @@
       }
       else{
         var n = notes[i];
-        var a = Math.max(0, (moyenne - Math.abs(moyenne - n)) * averageValue);
+        var a = Math.max(0, (moyenne - Math.abs(moyenne - n)) * averageValue / moyenne);
         newNotes.push(n+lineareValue + a)
       }
     }
