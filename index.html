@@ -51,7 +51,6 @@
   
     var Moyenne = React.createClass({
       render: function(){
-        console.log(this.props.notes)
         return <span>moyenne = {moy(this.props.notes)}</span>
       }
     });
@@ -216,7 +215,7 @@
             <div>Ajout Linéaire : <input onChange={this.handleLineareValueChanged} type="text" defaultValue="0" /></div>
             <div>Ajout autour de la moyenne : <input onChange={this.handleAverageValueChanged} type="text" defaultValue="0" /></div>
             <div>{list}</div>
-            <div> ----------- <Moyenne notes={this.state.notes}/> ========> <Moyenne notes={this.state.newNotes}/></div>
+            <div> ----------- <Moyenne notes={this.state.notes.map(n => parseFloat(n.replace(',','.')))}/> ========> <Moyenne notes={this.state.newNotes}/></div>
           </div>
         );
       },
