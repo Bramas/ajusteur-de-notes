@@ -51,7 +51,8 @@
   
     var Moyenne = React.createClass({
       render: function(){
-        return <span>moyenne = {moy(this.props.notes.map(n => parseFloat(n.replace(',','.'))))}</span>
+        console.log(this.props.notes)
+        return <span>moyenne = {moy(this.props.notes)}</span>
       }
     });
     var NoteItem = React.createClass({
